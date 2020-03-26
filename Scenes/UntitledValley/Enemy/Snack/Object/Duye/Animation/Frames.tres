@@ -1,0 +1,14 @@
+[gd_resource type="SpriteFrames" load_steps=5 format=2]
+
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Object/Duye/Animation/duye-3.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Object/Duye/Animation/duye-1.png" type="Texture" id=2]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Object/Duye/Animation/duye-2.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Object/Duye/Animation/duye-4.png" type="Texture" id=4]
+
+[resource]
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 1 ), ExtResource( 4 ) ],
+"loop": true,
+"name": "fly",
+"speed": 10.0
+} ]

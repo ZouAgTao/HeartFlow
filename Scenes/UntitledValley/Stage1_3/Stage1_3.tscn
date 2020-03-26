@@ -1,0 +1,171 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Scenes/UntitledValley/Stage1_3/Texture/stage1-3.png" type="Texture" id=1]
+[ext_resource path="res://Player/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://GUI/HUD/HUD_State.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Wolf/Wolf.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Bird/Bird.tscn" type="PackedScene" id=5]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+export(bool) var can_exit = false
+export(int) var enemy_num = 0
+
+var player_speed = 300
+
+func _ready():
+	$AnimationPlayer.current_animation = \"begin\"
+
+
+func enemy_die() -> void:
+	enemy_num -= 1
+	if enemy_num <= 0:
+		can_exit = true
+
+
+func replay() -> void:
+	$AnimationPlayer.play_backwards(\"begin\")
+	yield(self.get_node(\"AnimationPlayer\"), \"animation_finished\")
+	AgSenceLoader.play_again()
+
+
+func _on_Area2D_body_entered(body :Node):
+	if can_exit:
+		var area_player = body as Player
+		if area_player:
+			$AnimationPlayer.play_backwards(\"begin\")
+			yield(self.get_node(\"AnimationPlayer\"), \"animation_finished\")
+			AgSenceLoader.save_life_n_fln($Player.get_life_num(), $Player.get_flight_num())
+			AgSenceLoader.go_next_stage()
+
+
+func _on_Mud_body_entered(body):
+	var player_body = body as Player
+	if player_body:
+		player_body.can_jump = false
+		player_speed = player_body.speed
+		player_body.speed /= 3
+
+
+func _on_Mud_body_exited(body):
+	var player_body = body as Player
+	if player_body:
+		player_body.can_jump = true
+		player_body.speed = player_speed
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 450, 10 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 110, 40 )
+
+[sub_resource type="Animation" id=4]
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 0, 0, 0, 1 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 30, 190 )
+
+[node name="Stage1_3" type="Node2D"]
+script = SubResource( 1 )
+can_exit = true
+enemy_num = 3
+
+[node name="BG" type="Sprite" parent="."]
+position = Vector2( 960, 1080 )
+texture = ExtResource( 1 )
+
+[node name="Mud" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mud"]
+position = Vector2( 750, 2010 )
+shape = SubResource( 2 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="Soil_1" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( 0, 110, 310, 290, 610, 390, 590, 460, 0, 380 )
+
+[node name="Soil_2" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( 0, 620, 1580, 640, 1580, 290, 1670, 290, 1700, 340, 1680, 760, 1370, 1480, 1150, 1270, 940, 1490, 690, 1250, 430, 1460, 230, 1220, 0, 1430 )
+
+[node name="Soil_3" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( 1920, 870, 1790, 1190, 1710, 1500, 1710, 1880, 1420, 1890, 1190, 2020, 300, 2020, 0, 1860, 0, 2160, 1920, 2160 )
+
+[node name="Border" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( 0, -160, 1920, -160, 1920, 880, 2000, 880, 2000, -240, -80, -240, -80, 640, 0, 640 )
+
+[node name="Border2" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( -80, 1360, 0, 1360, 0, 1920, -80, 1920 )
+
+[node name="BoradBody2D" type="StaticBody2D" parent="."]
+collision_layer = 128
+collision_mask = 2
+
+[node name="Board" type="CollisionShape2D" parent="BoradBody2D"]
+position = Vector2( 910, 320 )
+shape = SubResource( 3 )
+one_way_collision = true
+
+[node name="Board2" type="CollisionShape2D" parent="BoradBody2D"]
+position = Vector2( 1330, 278 )
+shape = SubResource( 3 )
+one_way_collision = true
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 70, 565 )
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2( 0.00256348, 0 )
+current = true
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 2160
+limit_smoothed = true
+smoothing_enabled = true
+drag_margin_left = 0.3
+drag_margin_top = 0.3
+drag_margin_right = 0.3
+drag_margin_bottom = 0.3
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/begin = SubResource( 4 )
+
+[node name="HUD" parent="." instance=ExtResource( 3 )]
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 40, 1660 )
+shape = SubResource( 5 )
+
+[node name="Wolf" parent="." instance=ExtResource( 4 )]
+position = Vector2( 550, 290 )
+is_face_to_right = true
+
+[node name="Bird" parent="." instance=ExtResource( 5 )]
+position = Vector2( 1330, 400 )
+
+[node name="Bird2" parent="." instance=ExtResource( 5 )]
+position = Vector2( 740, 1640 )
+[connection signal="body_entered" from="Mud" to="." method="_on_Mud_body_entered"]
+[connection signal="body_exited" from="Mud" to="." method="_on_Mud_body_exited"]
+[connection signal="change_life_num" from="Player" to="HUD" method="_on_Player_change_life_num"]
+[connection signal="die" from="Player" to="HUD" method="_on_Player_die"]
+[connection signal="use_flight_props" from="Player" to="HUD" method="_on_Player_use_flight_props"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]

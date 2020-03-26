@@ -1,0 +1,31 @@
+[gd_resource type="SpriteFrames" load_steps=7 format=2]
+
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Animation/idle-1.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Animation/attack-1.png" type="Texture" id=2]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Animation/attacked-1.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Animation/die-3.png" type="Texture" id=4]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Animation/die-1.png" type="Texture" id=5]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Snack/Animation/die-2.png" type="Texture" id=6]
+
+[resource]
+animations = [ {
+"frames": [ ExtResource( 1 ) ],
+"loop": true,
+"name": "idle",
+"speed": 1.0
+}, {
+"frames": [ ExtResource( 5 ), ExtResource( 6 ), ExtResource( 4 ) ],
+"loop": false,
+"name": "die",
+"speed": 1.0
+}, {
+"frames": [ ExtResource( 3 ) ],
+"loop": false,
+"name": "attacked",
+"speed": 1.0
+}, {
+"frames": [ ExtResource( 2 ) ],
+"loop": false,
+"name": "attack_a",
+"speed": 1.0
+} ]

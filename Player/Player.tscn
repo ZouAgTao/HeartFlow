@@ -1,0 +1,161 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://Player/Scripts/Player.gd" type="Script" id=1]
+[ext_resource path="res://Player/Animation/Frames.tres" type="SpriteFrames" id=2]
+[ext_resource path="res://Player/Object/Darts/Darts.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Player/Texture/breath_light.png" type="Texture" id=4]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 40.0
+height = 140.0
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 59.9973
+height = 120.005
+
+[sub_resource type="CapsuleShape2D" id=3]
+radius = 60.0026
+height = 119.995
+
+[sub_resource type="CircleShape2D" id=4]
+radius = 140.0
+
+[sub_resource type="Animation" id=5]
+length = 0.5
+step = 0.05
+tracks/0/type = "bezier"
+tracks/0/path = NodePath("BreathLight:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( 1e-05, -0.25, 0, 0, 1.50395, 1.5, -0.247936, -0.0030638, 0.257901, -0.0030638 ),
+"times": PoolRealArray( 0, 0.5 )
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath("BreathLight:scale:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( 1e-05, -0.25, 0, 0, 1.50044, 1.5, -0.248791, -0.00657439, 0.25, 0 ),
+"times": PoolRealArray( 0, 0.5 )
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("BreathLight:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+tracks/3/type = "method"
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0.05 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "_check_breath"
+} ]
+}
+
+[node name="Player" type="KinematicBody2D"]
+scale = Vector2( 0.5, 0.5 )
+collision_layer = 2
+collision_mask = 17
+script = ExtResource( 1 )
+flight_props = ExtResource( 3 )
+
+[node name="PlayerShape" type="CollisionShape2D" parent="."]
+position = Vector2( 10, 0 )
+shape = SubResource( 1 )
+
+[node name="AttackAreaLeft" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 4
+
+[node name="AttackAreaLeftShape2D" type="CollisionShape2D" parent="AttackAreaLeft"]
+position = Vector2( -120, -0.00256348 )
+rotation = -1.57079
+shape = SubResource( 2 )
+
+[node name="AttackAreaRight" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 4
+
+[node name="AttackAreaRightShape2D" type="CollisionShape2D" parent="AttackAreaRight"]
+position = Vector2( 120, -0.00256348 )
+rotation = 1.57079
+shape = SubResource( 3 )
+
+[node name="PlayerArea" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 17
+
+[node name="PlayerAreanShape2D" type="CollisionShape2D" parent="PlayerArea"]
+shape = SubResource( 4 )
+
+[node name="Animation" type="AnimatedSprite" parent="."]
+frames = ExtResource( 2 )
+animation = "idle"
+
+[node name="AttackHardTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="AttackABHardTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="ShootHardTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="AttackedHardTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="AttackBNepTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="FlashCheckTimer" type="Timer" parent="."]
+wait_time = 0.25
+one_shot = true
+
+[node name="FlashHardTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="KillCheckTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="HeartLessCheckTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="BreathLight" type="Sprite" parent="."]
+scale = Vector2( 1e-05, 1e-05 )
+texture = ExtResource( 4 )
+
+[node name="AnPy" type="AnimationPlayer" parent="."]
+anims/breath = SubResource( 5 )
+[connection signal="body_entered" from="AttackAreaLeft" to="." method="_on_AttackAreaLeft_body_entered"]
+[connection signal="body_exited" from="AttackAreaLeft" to="." method="_on_AttackAreaLeft_body_exited"]
+[connection signal="body_entered" from="AttackAreaRight" to="." method="_on_AttackAreaRight_body_entered"]
+[connection signal="body_exited" from="AttackAreaRight" to="." method="_on_AttackAreaRight_body_exited"]
+[connection signal="animation_finished" from="Animation" to="." method="_on_Animation_animation_finished"]
+[connection signal="frame_changed" from="Animation" to="." method="_on_Animation_frame_changed"]
+[connection signal="timeout" from="AttackHardTimer" to="." method="_on_AttackHardTimer_timeout"]
+[connection signal="timeout" from="AttackABHardTimer" to="." method="_on_AttackABHardTimer_timeout"]
+[connection signal="timeout" from="ShootHardTimer" to="." method="_on_ShootHardTimer_timeout"]
+[connection signal="timeout" from="AttackedHardTimer" to="." method="_on_AttackedHardTimer_timeout"]
+[connection signal="timeout" from="AttackBNepTimer" to="." method="_on_AttackBNepTimer_timeout"]
+[connection signal="timeout" from="FlashCheckTimer" to="." method="_on_FlashCheckTimer_timeout"]
+[connection signal="timeout" from="FlashHardTimer" to="." method="_on_FlashHardTimer_timeout"]
+[connection signal="timeout" from="KillCheckTimer" to="." method="_on_KillCheckTimer_timeout"]
+[connection signal="timeout" from="HeartLessCheckTimer" to="." method="_on_HeartLessCheckTimer_timeout"]

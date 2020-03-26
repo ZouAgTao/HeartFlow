@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Bird/Animation/Frames.tres" type="SpriteFrames" id=1]
+[ext_resource path="res://Scenes/UntitledValley/Enemy/Bird/Scripts/Bird.gd" type="Script" id=2]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 80.0
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 800.0
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 120.0
+
+[node name="Bird" type="KinematicBody2D"]
+scale = Vector2( 0.5, 0.5 )
+collision_layer = 4
+collision_mask = 9
+script = ExtResource( 2 )
+
+[node name="BirdShape" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -60 )
+shape = SubResource( 1 )
+
+[node name="FindArea" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 2
+
+[node name="FindAreaShape" type="CollisionShape2D" parent="FindArea"]
+shape = SubResource( 2 )
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 2
+
+[node name="AttackAreaShape" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource( 3 )
+
+[node name="Animation" type="AnimatedSprite" parent="."]
+frames = ExtResource( 1 )
+animation = "idle"
+
+[node name="AttackedHardTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+[connection signal="area_entered" from="FindArea" to="." method="_on_FindArea_area_entered"]
+[connection signal="area_exited" from="FindArea" to="." method="_on_FindArea_area_exited"]
+[connection signal="area_entered" from="AttackArea" to="." method="_on_AttackArea_area_entered"]
+[connection signal="timeout" from="AttackedHardTimer" to="." method="_on_AttackedHardTimer_timeout"]

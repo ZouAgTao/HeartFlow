@@ -1,0 +1,105 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scenes/UntitledValley/Stage1_4/Texture/stage1-4.png" type="Texture" id=1]
+[ext_resource path="res://Player/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://GUI/HUD/HUD_State.tscn" type="PackedScene" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+export(bool) var can_exit = false
+export(int) var enemy_num = 0
+
+func _ready():
+	$AnimationPlayer.current_animation = \"begin\"
+
+
+func enemy_die() -> void:
+	enemy_num -= 1
+	if enemy_num <= 0:
+		can_exit = true
+
+
+func replay() -> void:
+	$AnimationPlayer.play_backwards(\"begin\")
+	yield(self.get_node(\"AnimationPlayer\"), \"animation_finished\")
+	AgSenceLoader.play_again()
+
+
+func _on_Area2D_body_entered(body :Node):
+	if can_exit:
+		var area_player = body as Player
+		if area_player:
+			$AnimationPlayer.play_backwards(\"begin\")
+			yield(self.get_node(\"AnimationPlayer\"), \"animation_finished\")
+			AgSenceLoader.save_life_n_fln($Player.get_life_num(), $Player.get_flight_num())
+			AgSenceLoader.go_next_stage()
+"
+
+[sub_resource type="Animation" id=2]
+resource_name = "begin"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 0, 0, 0, 1 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 30, 190 )
+
+[node name="Stage1_4" type="Node2D"]
+script = SubResource( 1 )
+enemy_num = 1
+
+[node name="BG" type="Sprite" parent="."]
+position = Vector2( 960, 360 )
+texture = ExtResource( 1 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="Soil_1" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( 1920, 370, 1830, 360, 1760, 360, 1760, 710, 1520, 710, 1280, 690, 240, 690, 240, 330, 200, 290, 0, 290, 0, 720, 1920, 720 )
+
+[node name="Border" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PoolVector2Array( 0, 320, 0, 0, 1920, 0, 1920, 400, 2000, 400, 2000, -80, -80, -80, -80, 320 )
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1870, 300 )
+is_face_to_right = false
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+current = true
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 720
+limit_smoothed = true
+smoothing_enabled = true
+drag_margin_left = 0.3
+drag_margin_top = 0.3
+drag_margin_right = 0.3
+drag_margin_bottom = 0.3
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/begin = SubResource( 2 )
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 30, 140 )
+shape = SubResource( 3 )
+
+[node name="HUD" parent="." instance=ExtResource( 3 )]
+[connection signal="change_life_num" from="Player" to="HUD" method="_on_Player_change_life_num"]
+[connection signal="die" from="Player" to="HUD" method="_on_Player_die"]
+[connection signal="use_flight_props" from="Player" to="HUD" method="_on_Player_use_flight_props"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
